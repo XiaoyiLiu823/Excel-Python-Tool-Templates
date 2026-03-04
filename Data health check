@@ -1,0 +1,69 @@
+import pandas as pd
+
+
+df = pd.read_csv(df_path)
+
+
+
+#-------1)读取基本信息
+def read_information(df):
+    df_shape = df.shape
+    df_columns = df.columns
+    df_info = df.info()
+    df_head = df.head()
+
+    return {
+        'df_shape':df_shape,
+        'df_columns':df_columns,
+        'df_info':df_info,
+        'df_head':df_head,
+    }
+
+
+#------2)数据摸底
+def data_survey(df):
+    dict_nunique = {}  #看这一列的多样性，查看每一列到底有几个“不同的值”
+    dict_unique = {}    #返回一个数组，里面是该列所有出现过的值（不重复）
+    dict_ratio = {}   #有时候表格很大（比如 100 万行），看绝对数值很累，你可以看比例
+    for col in df.columns:
+        nunique_count = df[col].nunique()
+        unique_count = df[col].unique()
+        dict_nunique[col] = nunique_count
+        dict_unique[col] = unique_count
+
+        columns_ratio = df.nunique()/len(df)
+        dict_ratio[col] = columns_ratio
+
+    return {
+        'dict_nunique':dict_nunique,
+        'dict_unique':dict_unique,
+        'dict_ratio':dict_ratio,
+    }
+
+
+
+#--------3)检查空值和重复行
+def data_check(df):
+    isna = {}   #空值
+    dupl = {}   #重复行
+    for col in df.columns:
+        isna_count = df.isna().sum()
+        dupl_count = df.duplicated().sum()
+        isna[col] = isna_count
+        dupl[col] = dupl_count
+
+    return {
+        'isna_count':isna,
+        'dupl_count':dupl,
+    }
+
+
+#--------4)数据查询
+def data_query(df):
+    for col in df.columns:
+        if type(col) == int:
+            sum = df[col].sum()
+            count = df[col].count()
+            mean = df[col].mean()
+            median = df[col].median()
+            quantile = df[col].quantile(0.9)
